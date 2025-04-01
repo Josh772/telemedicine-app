@@ -14,6 +14,9 @@ import PrescriptionPage from "./pages/Prescription";
 import HelpSupportPage from "./pages/HelpSupport";
 import Profile from "./pages/profile"; // Import the ProfilePage
 import EditProfile from "./pages/EditProfile";
+import DoctorAppointment from "./pages/DoctorAppointment";
+import DoctorMessages from "./pages/DoctorMessages";
+import DoctorSettings from "./pages/DoctorSettings"; // Import DoctorSettings
 
 function App() {
   return (
@@ -22,16 +25,19 @@ function App() {
         <Route path="/" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<DashboardPatient />} />
+        <Route path="/dashboard-patient" element={<DashboardPatient />} />
         <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
         <Route path="/request-appointment" element={<RequestAppointment />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/appointments" element={<Appointments />} />
+        <Route path="/doctor-appointments" element={<DoctorAppointment />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/prescriptions" element={<PrescriptionPage />} />
         <Route path="/help" element={<HelpSupportPage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/edit" element={<EditProfile />} />
+        <Route path="/doctor-messages" element={<DoctorMessages />} />
+        <Route path="/doctor-settings" element={<DoctorSettings />} />
       </Routes>
     </BrowserRouter>
   );

@@ -15,26 +15,33 @@ function Navbar() {
 
       {/* Navigation Links */}
       <div className="flex space-x-6">
-        {[
-          "dashboard",
-          "messages",
-          "appointments",
-          "calendar",
-          "prescriptions",
-          "help",
-        ].map((route) => (
-          <NavLink
-            key={route}
-            to={`/${route}`}
-            className={({ isActive }) =>
-              `text-white hover:text-gray-200 transition ${
-                isActive ? "font-bold border-b-2 border-white" : ""
-              }`
-            }
-          >
-            {route.charAt(0).toUpperCase() + route.slice(1)}
-          </NavLink>
-        ))}
+        {/* Updated Dashboard Link to Route to Patient Dashboard */}
+        <NavLink
+          to="/dashboard-patient"
+          className={({ isActive }) =>
+            `text-white hover:text-gray-200 transition ${
+              isActive ? "font-bold border-b-2 border-white" : ""
+            }`
+          }
+        >
+          Dashboard
+        </NavLink>
+
+        {["messages", "appointments", "calendar", "prescriptions", "help"].map(
+          (route) => (
+            <NavLink
+              key={route}
+              to={`/${route}`}
+              className={({ isActive }) =>
+                `text-white hover:text-gray-200 transition ${
+                  isActive ? "font-bold border-b-2 border-white" : ""
+                }`
+              }
+            >
+              {route.charAt(0).toUpperCase() + route.slice(1)}
+            </NavLink>
+          )
+        )}
       </div>
 
       {/* Right Section: Search & Profile */}

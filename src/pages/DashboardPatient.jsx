@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import dayjs from "dayjs";
 
-const Dashboard = () => {
+const DashboardPatient = () => {
   const navigate = useNavigate();
 
   // Sample data for charts
@@ -179,4 +179,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardPatient;

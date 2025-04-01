@@ -1,51 +1,72 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../firebase"; // Import the db from Firebase
+import { auth, db, storage } from "../firebase"; // Import storage for profile pic
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion"; // Import motion
-import { doc, setDoc } from "firebase/firestore"; // Firestore methods to save data
+import { motion } from "framer-motion";
+import { doc, setDoc } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase Storage
 
 function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("patient"); // Role default to 'patient'
+  const [role, setRole] = useState("patient");
+  const [profilePic, setProfilePic] = useState(null); // Track profile picture
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setError(""); // Reset error message
+    setError("");
+    setLoading(true);
 
     try {
+      // Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
       const user = userCredential.user;
+      let profilePicURL = "";
 
-      // Store user info in Firestore with role (doctor or patient)
+      if (profilePic) {
+        // Upload profile picture
+        const storageRef = ref(storage, `profile_pictures/${user.uid}`);
+        const uploadTask = uploadBytesResumable(storageRef, profilePic);
+
+        await new Promise((resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            null,
+            (error) => reject(error),
+            async () => {
+              profilePicURL = await getDownloadURL(uploadTask.snapshot.ref);
+              resolve();
+            }
+          );
+        });
+      }
+
+      // Store user data in Firestore
       await setDoc(doc(db, "users", user.uid), {
         name,
         email,
-        role, // 'doctor' or 'patient'
+        role,
+        profilePic: profilePicURL || "", // Store image URL
       });
 
       alert("Signup successful!");
-
-      // Redirect based on role
-      if (role === "doctor") {
-        navigate("/doctor-dashboard"); // Redirect to Doctor's dashboard
-      } else {
-        navigate("/patient-dashboard"); // Redirect to Patient's dashboard
-      }
+      navigate(role === "doctor" ? "/doctor-dashboard" : "/patient-dashboard");
     } catch (err) {
-      if (err.code === "auth/email-already-in-use") {
-        setError("This email is already registered. Try logging in.");
-      } else {
-        setError(err.message);
-      }
+      setError(
+        err.code === "auth/email-already-in-use"
+          ? "This email is already registered."
+          : err.message
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,6 +122,19 @@ function Signup() {
             />
           </div>
 
+          {/* Profile Picture Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Profile Picture
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="mt-1 p-2 w-full border rounded-lg focus:ring-2 focus:ring-[#17a2b8] outline-none"
+              onChange={(e) => setProfilePic(e.target.files[0])}
+            />
+          </div>
+
           {/* Role Selection Dropdown */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -116,23 +150,26 @@ function Signup() {
             </select>
           </div>
 
-          {/* Motion-enabled Sign Up Button */}
+          {/* Sign Up Button */}
           <motion.button
             type="submit"
-            className="w-full bg-[#28a745] text-white py-3 rounded-lg hover:bg-[#218838] transition"
-            whileHover={{ scale: 1.1 }} // Button scales up on hover
-            whileTap={{ scale: 0.95 }} // Button scales down on tap
+            disabled={loading}
+            className={`w-full text-white py-3 rounded-lg transition ${
+              loading ? "bg-gray-400" : "bg-[#28a745] hover:bg-[#218838]"
+            }`}
+            whileHover={!loading ? { scale: 1.1 } : {}}
+            whileTap={!loading ? { scale: 0.95 } : {}}
           >
-            Sign Up
+            {loading ? "Signing Up..." : "Sign Up"}
           </motion.button>
 
-          {/* Motion-enabled Login Button */}
+          {/* Login Button */}
           <motion.button
             type="button"
             onClick={() => navigate("/login")}
             className="w-full bg-[#17a2b8] text-white py-3 rounded-lg hover:bg-[#138496] transition"
-            whileHover={{ scale: 1.1 }} // Button scales up on hover
-            whileTap={{ scale: 0.95 }} // Button scales down on tap
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
             Login
           </motion.button>

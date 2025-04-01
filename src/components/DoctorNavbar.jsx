@@ -3,19 +3,14 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const DoctorNavbar = ({ profilePic, name }) => {
-  // State to manage dropdown visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // Refs to handle click outside detection
   const dropdownRef = useRef(null);
   const profilePicRef = useRef(null);
 
-  // Function to toggle dropdown visibility
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  // Close dropdown if click is outside the dropdown or profile picture
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -28,10 +23,7 @@ const DoctorNavbar = ({ profilePic, name }) => {
       }
     };
 
-    // Attach event listener
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Clean up the event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -39,47 +31,44 @@ const DoctorNavbar = ({ profilePic, name }) => {
 
   return (
     <div className="bg-[#28a745] text-white p-4 flex justify-between items-center">
-      {/* Brand Name */}
       <div className="flex items-center space-x-2">
         <h1 className="text-2xl font-bold">TeleHealth</h1>
       </div>
 
-      {/* Doctor's Profile Picture and Dropdown */}
       <div className="flex items-center space-x-3">
-        {/* Profile Picture */}
         <div
           className="w-10 h-10 rounded-full overflow-hidden border-2 border-white cursor-pointer"
-          onClick={toggleDropdown} // Toggle dropdown when the profile picture is clicked
-          ref={profilePicRef} // Ref for profile picture
+          onClick={toggleDropdown}
+          ref={profilePicRef}
         >
           <img
-            src={profilePic || "default-profile.jpg"} // Fallback image
+            src={profilePic || "default-profile.jpg"}
             alt="Profile"
             className="w-full h-full object-cover"
           />
         </div>
 
-        {/* Dropdown for doctor-specific links */}
         {isDropdownOpen && (
           <motion.div
             className="absolute right-0 mt-2 w-40 bg-white text-black rounded-lg shadow-lg"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            ref={dropdownRef} // Ref for dropdown menu
+            ref={dropdownRef}
           >
-            <div className="text-xl">{name}</div>
+            <div className="text-xl p-2">{name}</div>
             <ul className="p-2">
               <li className="p-2 hover:bg-[#28a745] hover:text-white">
                 <Link to="/doctor-dashboard">Dashboard</Link>
               </li>
               <li className="p-2 hover:bg-[#28a745] hover:text-white">
-                <Link to="/appointments">Appointments</Link>
+                <Link to="/doctor-appointments">Appointments</Link>
               </li>
               <li className="p-2 hover:bg-[#28a745] hover:text-white">
-                <Link to="/messages">Messages</Link>
+                <Link to="/doctor-messages">Messages</Link>
               </li>
               <li className="p-2 hover:bg-[#28a745] hover:text-white">
-                <Link to="/settings">Settings</Link>
+                {/* Updated Settings Route */}
+                <Link to="/doctor-settings">Settings</Link>
               </li>
             </ul>
           </motion.div>
